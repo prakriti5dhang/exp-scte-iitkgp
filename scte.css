@@ -1,0 +1,45 @@
+body,
+html {
+    margin: 0;
+    padding: 0;
+    background-color: white;
+}
+
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+#table {
+    height: 510px;
+    overflow-y: auto;
+}
+
+#mycanvas1 {
+
+    background-repeat: no-repeat;
+    background-position: center;
+    background-color: #ffffff;
+    border: 1.5px solid black;
+    display: block;
+  max-width:  100%;
+    height: auto; 
+
+}
+
+/* #ChartContainer {
+
+    background-repeat: no-repeat;
+    background-position: center;
+    background-color: #ffffff;
+    border: 1.5px solid black;
+    display: block;
+    max-width: 100%;
+    height: auto;
+}
+ */
+.card {
+    margin-bottom: 10px;
+}

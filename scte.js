@@ -20,8 +20,11 @@ var temp1, temp2;
 var i = 0;
 var tabrowindex = 0;
 var points = []; //points to draw stoke
-var dataPointsg=[]; // for chart
+
+var dataPointsg = []; // for chart
 var chart;
+const randomcenterpoint = []; //randomly selected center point
+const pointsrbf = []; // points from the table
 
 $(document).ready(function () {
     $("#mycanvas1").click(function (e) {
@@ -42,22 +45,22 @@ function canvas11() {
         //out.innerHTML = 'X:' + pos1.x + ' Y:' + pos1.y;
     }
 
-    chart = new CanvasJS.Chart("ChartContainer", {
+    /* chart = new CanvasJS.Chart("ChartContainer", {
         animationEnabled: true,
-            title: {
-                text: "RBF Prediction",
-            },
-           
-            data: [{
-                    type: "spline",
-                    dataPoints: dataPointsg
-                }]
-        });
-    
-        chart.render();
-    
-       
-       
+        title: {
+            text: "RBF Prediction",
+        },
+
+        data: [{
+            type: "spline",
+            dataPoints: dataPointsg
+        }]
+    });
+
+    chart.render();
+ */
+
+
 };
 var coordinates = new Array();
 function getPosition1(event) {
@@ -79,6 +82,7 @@ function getMousePos1(gcanvas1, evt) {
 
 function drawCoordinates(x, y) {
     xCo.push(x); yCo.push(y);
+
     points.push({ x, y });
     if (counter < 100) {
         ctx1 = document.getElementById("mycanvas1").getContext("2d");
@@ -105,8 +109,8 @@ function drawCoordinates(x, y) {
     //alert(classes);
     temp1 = Math.abs(x);
     temp2 = Math.abs(y);
-    quotient1 = parseFloat(temp1 / 49).toPrecision(6); // 11
-    quotient2 = parseFloat(temp2 / 52).toPrecision(6); // 3
+    quotient1 = parseFloat(temp1 / 49).toPrecision(3); // 11
+    quotient2 = parseFloat(temp2 / 52).toPrecision(3); // 3
     var cord = quotient1 + "|" + quotient2;
     xyz.push(cord);
     //alert("cord");
@@ -123,7 +127,9 @@ function tabled() {
     arr[0] = tabrowindex + 1;
     arr[1] = quotient1;//x
     arr[2] = quotient2;//y
-
+    //xCo.push(quotient1); yCo.push(quotient2);
+    // points.push({ x, y });
+    pointsrbf.push({ quotient1, quotient2 });
 
     if (table.rows.length <= 100) {
         var row = table.insertRow(++tabrowindex); // Row increment
@@ -152,9 +158,9 @@ function reset() {
     i = 0;
     document.getElementById("tpdata").innerHTML = "";
     //console.log(xyz);
-    xyz = [];
-    classes = [];
-    clearChart();
+
+    //clearChart();
+
 }
 
 /************************ Function for draw strokes ***************************/
@@ -172,61 +178,178 @@ function redraw() {
         drawStroke(ctx1, points[i].x, points[i].y, points[i + 1].x, points[i + 1].y);
     }
 }
+function checkcenter() {
+    //var centers=document.getElementById("centernum").value;
 
-function go(){
+}
+
+function go() {
+
+    var sd = document.getElementById("sd").value;
+
+    //const centerPoint = getRandomPointFromdataset(points);
+
+    //randomcenterpoint.push(randomPoint);
+    //console.log('Center Point:', centerPoint);
+    //console.log('Updated Data Points Array:', randomcenterpoint);
+
+    console.log('Data Points from table:', points);
+    const centerY = 100;
+    const variance = 100;
+
+    /* for (let p = 0; p < points.length; p++) {
+           const distance = euclideanDistance(points[p].x, points[p].y, centerPoint.x, centerPoint.y);
+           console.log('Euclidean Distance:', distance);
+          // const phi = Math.exp(-beta * distance);
+         //const value= phi * Math.sqrt(distance);
+          //const value1 = Math.exp(-(((distance)** 2) / 2*(sd) **2));
+         // const value2 = 1 /(math.sqrt(2*3.14*((sd)**2)));
+          //const gf =value2 * value1;
+          //console.log('gf:', gf);
+          //console.log('Value1:',value1);
+          //console.log('Value2:', value2);
+           dataPointsg.push({ x: p, y: distance});
+       } */
+    //console.log(dataPointsg); 
+
+
+
+    //showgraph();
+
+    // Get the canvas element and its 2d context
+    const canvas = document.getElementById('canvas');
+    const context = canvas.getContext('2d');
+
+    // Clear the canvas
+    context.clearRect(0, 0, canvas.width, canvas.height);
+
+    // Draw Gaussian basis functions for each data point
+    for (const point of points) {
+        drawGaussianBasisFunction(point.x, point.y);
+    }
+
+    // Function to draw a Gaussian basis function curve
+    function drawGaussianBasisFunction(x, y) {
+        context.beginPath();
+        context.strokeStyle = 'blue';
+        context.lineWidth = 2;
+
+        for (let xPos = 0; xPos < canvas.width; xPos++) {
+            const distance = Math.sqrt((xPos - x) ** 2 + (centerY - y) ** 2);
+            const value = Math.exp(-((distance ** 2) / (2 * variance ** 2)));
+            const yPos = centerY - value * 150; // Scale for visualization
+            if (xPos === 0) {
+                context.moveTo(xPos, yPos);
+            } else {
+                context.lineTo(xPos, yPos);
+            }
+        }
+
+        context.stroke();
+    }
+
+
+}
+
+/* function getRandomPointFromdataset(dataset) {
+    const randomIndex = Math.floor(Math.random() * dataset.length);
+    return dataset[randomIndex];
+}
+
+function euclideanDistance(x1, y1, x2, y2) {
+    const dx = x2 - x1;
+    const dy = y2 - y1;
+
+    return Math.sqrt(dx * dx + dy * dy);
+
+}
+
+
+function showgraph() {
+    chart = new CanvasJS.Chart("ChartContainer", {
+        animationEnabled: true,
+        title: {
+            text: "RBF Prediction",
+        },
+        axisX: {
+            gridColor: "lightblue",
+            gridThickness: 1
+        },
+        data: [{
+            type: "splineArea",
+            dataPoints:dataPointsg
+        }]
+    });
+
+    chart.render();
+
+
+
+}
+
+
+function clearChart() {
+    chart.options.data.forEach((series) => {
+        series.dataPoints = [];
+    });
+    chart.render();
+} */
+
+
+/*function go(){
 var centers=document.getElementById("centernum").value;
 // Gaussian Radial Basis Function
 function radialBasisFunction(input, center, width) {
     var distance = Math.abs(input - center);
     return Math.exp(-0.5 * (distance / width) ** 2);
   }
-  
+
   // RBF Network Prediction
   function rbfNetworkPrediction(input, centers, weights, widths) {
     if (centers.length !== weights.length || centers.length !== widths.length) {
       throw new Error("The number of centers, weights, and widths should be the same.");
     }
-  
+
     let output = 0;
     for (let i = 0; i < centers.length; i++) {
       var rbfValue = radialBasisFunction(input, centers[i], widths[i]);
       output += rbfValue * weights[i];
     }
-  
+
     return output;
   }
-  
+
   // Function to read data from the table and prepare arrays
   function getDataFromTable(mytable) {
     var table = document.getElementById(mytable);
     var rows = table.getElementsByTagName("tr");
-  
+
     // Initialize arrays to hold data
     var inputs = [];
     var outputs = [];
-  
+
     // Skip the first row (header)
     for (let i = 1; i < rows.length; i++) {
       var cells = rows[i].getElementsByTagName("td");
       var input = parseFloat(cells[1].innerText);
       var output = parseFloat(cells[2].innerText);
-  
+
       inputs.push(input);
       outputs.push(output);
     }
-  
+
     return { inputs, outputs };
   }
-  
+
   // Example usage:
   var mytable = "mytable";
   var { inputs, outputs } = getDataFromTable(mytable);
-  
+
   // Assuming you have the centers, weights, and widths arrays from your trained RBF network
   var centers = [ 2.0]; // Example centers array
   var weights = [ 0.5]; // Example weights array
   var widths = [ 1 ]; // Example widths array
-  
+
   // Calculate predictions for each input in the table
   for (let i = 0; i < inputs.length; i++) {
     var input = inputs[i];
@@ -234,8 +357,8 @@ function radialBasisFunction(input, center, width) {
     console.log("Prediction for input " +input +" , " + prediction);
     dataPointsg.push({x:input, y:prediction});
   }
-  
-   
+
+
   showgraph();
 
 
@@ -250,30 +373,31 @@ function showgraph(){
             },
             axisX:{
                 gridColor: "lightblue" ,
-                gridThickness: 1       
+                gridThickness: 1
               },
             data: [{
                     type: "spline",
                     dataPoints: dataPointsg
                 }]
         });
-    
+
         chart.render();
-    
-       
+
+
         console.log(dataPointsg);
     }
-    
-    
+
+
+
     function clearChart() {
         chart.options.data.forEach((series) => {
             series.dataPoints = [];
           });
         chart.render();
       }
-    
 
 
+*/
 
 
 //var dataPoints=[];

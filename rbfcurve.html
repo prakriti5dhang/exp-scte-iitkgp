@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Basis Function Visualization</title>
+    
+</head>
+<body>
+    <canvas id="canvas" width="800" height="400"></canvas>
+    <script>
+      // Parameters
+const centerY = 200; // y-coordinate of the center
+const variance = 100; // Variance of the Gaussian function
+
+// Sample data points from a table
+const dataPoints = [
+    { x: 100, y: 150 },
+    { x: 200, y: 300 },
+    { x: 300, y: 100 },
+    // ... Add more data points as needed
+];
+
+// Get the canvas element and its 2d context
+const canvas = document.getElementById('canvas');
+const context = canvas.getContext('2d');
+
+// Clear the canvas
+context.clearRect(0, 0, canvas.width, canvas.height);
+
+// Draw Gaussian basis functions for each data point
+for (const point of dataPoints) {
+    drawGaussianBasisFunction(point.x, point.y);
+}
+
+// Function to draw a Gaussian basis function curve
+function drawGaussianBasisFunction(x, y) {
+    context.beginPath();
+    context.strokeStyle = 'blue';
+    context.lineWidth = 2;
+
+    for (let xPos = 0; xPos < canvas.width; xPos++) {
+        const distance = Math.sqrt((xPos - x) ** 2 + (centerY - y) ** 2);
+        const value = Math.exp(-((distance ** 2) / (2 * variance ** 2)));
+        const yPos = centerY - value * 100; // Scale for visualization
+        if (xPos === 0) {
+            context.moveTo(xPos, yPos);
+        } else {
+            context.lineTo(xPos, yPos);
+        }
+    }
+
+    context.stroke();
+}
+
+
+    </script>
+</body>
+</html>

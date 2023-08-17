@@ -41,13 +41,13 @@
                                 <div class="card-body">
                                     <div class="form-group">
                                         <label for="">Number of centers</label>
-                                        <input type="number" class="form-control" id="centernum"
-                                            placeholder="Enter number of centers">
+                                        <input type="number" class="form-control" id="centernum" oninput="checkcenter()"
+                                            placeholder="Centers point is 100">
                                     </div>
                                     <div class="form-group">
                                         <label for="">Standard Deviation</label>
                                         <input type="number" class="form-control" id="sd"
-                                            placeholder="Standard Deviation">
+                                            placeholder="Standard Deviation is 100">
                                     </div>
 
                                 </div>
@@ -104,14 +104,14 @@
             </div>
             
             <div class="row">
-                <div class="col-md-12">
-                    <div class="card border-bottom-0 ">
+                <div class="col-md-6">
+                    <div class="card ">
                         <h5 class="card-header">Basic Function</h5>
                         <div class="card-body">
+                            <canvas id="canvas" width="800" height="100"></canvas>
+                            <!--div id="ChartContainer" width="100%" height="300px">
 
-                            <div id="ChartContainer" width="100%" height="300px">
-
-                            </div>
+                            </div-->
 
                         </div>
                     </div>
